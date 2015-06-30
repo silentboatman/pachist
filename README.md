@@ -18,7 +18,10 @@ Usage: pachist [options] [number of lines]
 	-V, --version           Show current version
 	<number>                The number of lines to show.
                                 
-Numbers also have support to show range of lines. The syntax is either <n> for total number of lines or <n>,<n> for a range were the first number before the comma tells which line from the bottom to start with and the number after the comma describes the total number of lines to show. It can be very usefull together with the -q flag.
+        Numbers also have support to show range of lines. The syntax is either <n> for total number of lines
+        or <n>,<n> for a range were the first number before the comma tells which line from the bottom to
+        start with and the number after the comma describes the total number of lines to show. It can
+        be very usefull together with the -q flag.
 
 
 The configuration file can be found at ~/.config/pachist.conf and currently holds ability to change default colors and number of lines to be shown.
