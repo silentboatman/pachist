@@ -103,7 +103,7 @@ check_args() {
 		-V|--version) echo $version && exit 0 ;;
 		*[0-9]*) lines=$(echo $* | grep -o "[0-9,]*")
 			check_args ${1%%[0-9,]*};;
-		-n|--num) num="/usr/bin/nl -ba -nln -w3 --number-separator=" ;;
+		-n|--num) num=1 ;;
       		*) args[${#args[@]}]=$1 ;;
 		esac
 		shift
@@ -118,7 +118,7 @@ filter_and_format_output() {
 
 	awk -F' ' -v  boot_time="${boot_time}" -v quiet=$quiet -v col_1=$col_1 -v col_2=$col_2 -v col_3=$col_3 /\("$keywords"\)/'{
 	if (quiet) {
-		if ($3 == "[ALPM]" && $4 != "warning:") print $5
+		if ($3 == "[ALPM]" && $4 != "warning:") print $5 
 	} else if ($3 == "[ALPM-SCRIPTLET]" || $4 == "warning:") {
 		print $1, $2, substr($0, index($0,$3)+length($3)+1)
 	} else if ($3 == "[ALPM]") {
@@ -138,7 +138,7 @@ filter_and_format_output() {
 		print col_1 $1, $2, col_2 $4, $5, col_3 substr($0, index($0,$6)) off
 	} else if (substr($0, index($0,$3)) == "[PACMAN] starting full system upgrade") {
 		print ""
-	}}' /var/log/pacman.log | cat -s
+	}}' /var/log/pacman.log | cat -s 
 }
 
 ## execute and show the endresult
@@ -153,7 +153,8 @@ run_pachist() {
 
 	[[ $lines != *,* ]] && rows="1,$lines" || rows="$lines"  
 
-	filter_and_format_output | tac | ([[ $num ]] && $num || cat) | sed -n -e $rows'p' | tac
+	filter_and_format_output | tac | ([[ $quiet ]] && awk '!x[$0]++' || cat) | \
+	([[ $num ]] && nl -ba -nln -w3 -s ' ' || cat) | sed -n -e $rows'p' | tac
 }
 
 run_pachist $@
