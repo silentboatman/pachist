@@ -103,7 +103,7 @@ check_args() {
 		-V|--version) echo $version && exit 0 ;;
 		*[0-9]*) lines=$(echo $* | grep -o "[0-9,]*")
 			check_args ${1%%[0-9,]*};;
-		-n|--num) num="/usr/bin/nl -ba -nln -w3" ;;
+		-n|--num) num="/usr/bin/nl -ba -nln -w3 --number-separator=" ;;
       		*) args[${#args[@]}]=$1 ;;
 		esac
 		shift
@@ -153,7 +153,7 @@ run_pachist() {
 
 	[[ $lines != *,* ]] && rows="1,$lines" || rows="$lines"  
 
-	filter_and_format_output | tac | ([[ $num ]] && $num -s\ || cat) | sed -n -e $rows'p' | tac
+	filter_and_format_output | tac | ([[ $num ]] && $num || cat) | sed -n -e $rows'p' | tac
 }
 
 run_pachist $@
