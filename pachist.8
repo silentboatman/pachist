@@ -4,11 +4,12 @@ pachist \- a simple tool to view history of installed packages
 .SH SYNOPSIS
 .B pachist
 .RB [ \-h ]
-.RB [ \-\-err ]
 .RB [ \-n ]
 .RB [ \-q ]
 .RB [ \-v ]
 .RB [ \-V ]
+.RB [ \-\-date ]
+.RB [ \-\-err ]
 .RI [ <number> ]
 .SH DESCRIPTION
 .B pachist
@@ -20,9 +21,6 @@ verbose option can sometimes be important as it show install messages
 .TP
 \fB\-h\fR, \fB\-\-help\fR
 Show a brief help.
-.TP
-\ \ \ \ \fB\-\-err\fR
-Not as verbose as the '-v' option. Just to show warning messages.
 .TP
 \fB\-n\fR, \fB\-\-num\fR
 Show line numbers. It will put a number infront of every line making it easier
@@ -38,6 +36,13 @@ Show install messages. Like recomended or necessary steps that needs to be taken
 \fB\-V\fR, \fB\-\-version\fR
 Show current version.
 .TP
+\ \ \ \ \fB\-\-date\fR
+Show output from a specific date. It rely on the 'date --date' command and can handle
+pretty much the same formats as that. For more info check 'man date' or 'info date'.
+.TP
+\ \ \ \ \fB\-\-err\fR
+Not as verbose as the '-v' option. Just to show warning messages.
+.TP
 \fI<number>\fR
 The number of lines to show.
 
@@ -49,6 +54,8 @@ of lines to show. It can be very usefull together with the \fB-q\fR flag.
 pachist -v 50
 .TP
 yaourt -Syua --devel --noconfirm && pachist -v 50
+.TP
+pachist --date 'yesterday' 
 .TP
 pachist -q 22 
 .TP

@@ -47,15 +47,17 @@ usage() {
 
 	printf "options:\n"
 	printf "   -h, --help        Show this help\n"
-	printf "       --err         Not as verbose, just warning messages\n"
 	printf "   -n, --num         Show line numbers\n"
 	printf "   -q, --quiet       Show less information\n"
 	printf "   -v, --verbose     Show messages\n"
 	printf "   -V, --version     Show version\n"
+	printf "       --date        Show output after date\n"
+	printf "       --err         Not as verbose, just warning messages\n"
 	printf "   <number>          Number of lines to show\n\n"
 
 	printf "examples:\n"
 	printf "   %s -v 50\n" "$(basename $0)"
+	printf "   %s --date 'yesterday'\n" "$(basename $0)"
 	printf "   yaourt -Syua --devel --noconfirm && %s -v 50\n\n" "$(basename $0)"
 
 	printf "configuration:\n"
