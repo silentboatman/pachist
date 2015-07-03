@@ -108,7 +108,7 @@ check_args() {
 			-V|--version) echo $version && exit 0 ;;
 			-q|--quiet) quiet=1 ;;
 			-n|--num) num=1 ;;
-			--date) date_search="${2}"; shift ;;
+			--date) date_search="$2"; shift ;;
 			--err) fltr_7="[Ww]arning" ;;
 			--) shift; break ;;
 			*) echo "error: $* is not a valid input"; exit 1 ;;
@@ -169,7 +169,7 @@ run_pachist() {
 	## Default number of lines to show
 	lines="$(awk -F'"' '/lines/{print $2}' $HOME/.config/pachist.conf)"
 
-	check_args $@
+	check_args "$@"
 	get_colors
 
 	[[ $lines != *,* ]] && rows="1,$lines" || rows="$lines"  
@@ -177,4 +177,4 @@ run_pachist() {
 	filter_and_format_output 
 }
 
-run_pachist $@
+run_pachist "$@"
