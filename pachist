@@ -94,7 +94,7 @@ get_colors() {
 
 check_args() {
 	PARAM=$(getopt --options hvqVn \
-			--longoptions help,verbose,err,quiet,version,num \
+			--longoptions date:,help,verbose,err,quiet,version,num \
 			--name "$0" -- "$@")
 
 	[[ $? != 0 ]] && exit 1
@@ -105,12 +105,13 @@ check_args() {
 		case $1 in
 			-h|--help) usage ;;
 			-v|--verbose) fltr_7="\[ALPM-SCRIPTLET\]|[Ww]arning" ;;
-			--err) fltr_7="[Ww]arning" ;;
-			-q|--quiet) quiet=1 ;;
 			-V|--version) echo $version && exit 0 ;;
+			-q|--quiet) quiet=1 ;;
 			-n|--num) num=1 ;;
+			--date) date_search="${2}"; shift ;;
+			--err) fltr_7="[Ww]arning" ;;
 			--) shift; break ;;
-			*) echo "Internal error!"; exit 1 ;;
+			*) echo "error: $* is not a valid input"; exit 1 ;;
 		esac
 		shift
 	done
@@ -156,6 +157,7 @@ filter_and_format_output() {
 	cat -s |
 	sed '/./,$!d' |
 	([[ $num ]] && nl -ba -nln -w3 -s ' ' || cat) |
+	([[ $date_search ]] && grep "$(date +"%F" -d "$date_search")" || cat) |
 	sed -n -e $rows'p' |
 	tac
 }
