@@ -93,20 +93,30 @@ get_colors() {
 }
 
 check_args() {
-	## Add options
-	while [ "$#" -ne "0" ]; do
-    	case $1 in
-      		-h|--help) usage ;;
-      		-v|--verbose) fltr_7="\[ALPM-SCRIPTLET\]|[Ww]arning" ;;
-		--err) fltr_7="[Ww]arning" ;;
-		-q|--quiet) quiet=1 ;;
-		-V|--version) echo $version && exit 0 ;;
-		*[0-9]*) lines=$(echo $* | grep -o "[0-9,]*")
-			check_args ${1%%[0-9,]*};;
-		-n|--num) num=1 ;;
-      		*) args[${#args[@]}]=$1 ;;
+	PARAM=$(getopt --options hvqVn \
+			--longoptions help,verbose,err,quiet,version,num \
+			--name "$0" -- "$@")
+
+	[[ $? != 0 ]] && exit 1
+
+	eval set -- "$PARAM"
+
+	while true; do
+		case $1 in
+			-h|--help) usage ;;
+			-v|--verbose) fltr_7="\[ALPM-SCRIPTLET\]|[Ww]arning" ;;
+			--err) fltr_7="[Ww]arning" ;;
+			-q|--quiet) quiet=1 ;;
+			-V|--version) echo $version && exit 0 ;;
+			-n|--num) num=1 ;;
+			--) shift; break ;;
+			*) echo "Internal error!"; exit 1 ;;
 		esac
 		shift
+	done
+
+	for arg do
+		[[ $arg == *[0-9]* ]] && lines=$(echo $arg | grep -o "[0-9,]*")
 	done
 }
 
