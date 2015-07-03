@@ -158,8 +158,8 @@ filter_and_format_output() {
 	}}' | 
 	cat -s |
 	sed '/./,$!d' |
-	([[ $num ]] && nl -ba -nln -w3 -s ' ' || cat) |
 	([[ $date_search ]] && grep "$(date +"%F" -d "$date_search")" || cat) |
+	([[ $num ]] && nl -ba -nln -w3 -s ' ' || cat) |
 	sed -n -e $rows'p' |
 	tac
 }
