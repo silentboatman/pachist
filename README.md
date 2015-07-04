@@ -31,4 +31,4 @@ The configuration file can be found at ~/.config/pachist.conf and currently hold
 
 ![ScreenShot](https://raw.github.com/Almehdi/pachist/master/screenshot2.png)
 
-![ScreenShot](https://raw.github.com/Almehdi/pachist/master/screenshot3.png)
+![ScreenShot](https://raw.github.com/Almehdi/pachist/testing/screenshot3.png)
