@@ -110,7 +110,10 @@ check_args() {
 			-V|--version) echo $version && exit 0 ;;
 			-q|--quiet) quiet=1 ;;
 			-n|--num) num=1 ;;
-			--date) date_search="$2"; shift ;;
+			--date) date_search="$(date +"%F" -d "${2}")"
+				[[ $? != 0 ]] && exit
+				lines="$"
+				shift ;;
 			--err) fltr_7="[Ww]arning" ;;
 			--) shift; break ;;
 			*) echo "error: $* is not a valid input"; exit 1 ;;
@@ -123,19 +126,27 @@ check_args() {
 	done
 }
 
-
-## The command that makes it happen.
-filter_and_format_output() {
+filter() {
 	keywords="$fltr_1|$fltr_2|$fltr_3|$fltr_4|$fltr_5|$fltr_6|$fltr_7"
+
+	awk -F' ' -v quiet=$quiet /"($keywords)/ && /($date_search)"/'{
+	if (!quiet) {
+		print $0
+		next
+	}
+
+	if ($3 == "[ALPM]" && $4 != "warning:" && !($5 in pkg_array)) {
+		pkg_array[$5]++
+		print $0
+	}}'
+}
+
+format() {
 	boot_time=$(date +"%F %H:%M" -d "$(cut -f1 -d. /proc/uptime) seconds ago")
 
-	tac /var/log/pacman.log |
-	awk -F' ' -v  boot_time="${boot_time}" -v quiet=$quiet -v col_1=$col_1 -v col_2=$col_2 -v col_3=$col_3 /\("$keywords"\)/'{
+	awk -F' ' -v  boot_time="${boot_time}" -v date_search="$date_search" -v quiet=$quiet -v col_1=$col_1 -v col_2=$col_2 -v col_3=$col_3 '{
 	if (quiet) {
-		if ($3 == "[ALPM]" && $4 != "warning:" && !($5 in pkg_array)) {
-			pkg_array[$5]++
-			print $5
-		}
+		print $5
 	} else if ($3 == "[ALPM-SCRIPTLET]" || $4 == "warning:") {
 		print $1, $2, substr($0, index($0,$3)+length($3)+1)
 	} else if ($3 == "[ALPM]") {
@@ -144,7 +155,7 @@ filter_and_format_output() {
 
 		if (match($0, /[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}/)) {
 			date = substr($0, RSTART, RLENGTH)
-			if (!reboot_flag && date < boot_time) {
+			if (!date_search && !reboot_flag && date < boot_time) {
 				print ""
 				print "[" boot_time "]" red " SYSTEM REBOOT (last)" off
 				print ""
@@ -155,10 +166,9 @@ filter_and_format_output() {
 		print col_1 $1, $2, col_2 $4, $5, col_3 substr($0, index($0,$6)) off
 	} else if (substr($0, index($0,$3)) == "[PACMAN] starting full system upgrade") {
 		print ""
-	}}' | 
+	}}' |
 	cat -s |
 	sed '/./,$!d' |
-	([[ $date_search ]] && grep "$(date +"%F" -d "$date_search")" || cat) |
 	([[ $num ]] && nl -ba -nln -w3 -s ' ' || cat) |
 	sed -n -e $rows'p' |
 	tac
@@ -176,7 +186,7 @@ run_pachist() {
 
 	[[ $lines != *,* ]] && rows="1,$lines" || rows="$lines"  
 
-	filter_and_format_output 
+	tac /var/log/pacman.log | filter | format
 }
 
 run_pachist "$@"
